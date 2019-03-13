@@ -1,5 +1,5 @@
 interface Window extends Window {
-  dataLayer: any[]
+  ga(name?: string, name?: string, name?: string): any
   __SETTINGS__: {
     gaId: string
   }

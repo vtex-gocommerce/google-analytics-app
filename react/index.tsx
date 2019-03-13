@@ -2,69 +2,27 @@ import gaScript from './scripts/ga'
 
 const gaId = window.__SETTINGS__.gaId
 
-if (!gaId) {
-  throw new Error('Warning: No Google Tag Manager ID is defined. To setup this app, take a look at your admin')
-}
+// if (!gaId) {
+//   throw new Error('Warning: No Google Analytics ID is defined. To setup the app, go to your admin.')
+// }
 
 // tslint:disable-next-line no-eval
-eval(gaScript(window.__SETTINGS__.gaId))
+eval(gaScript(gaId))
 
-window.dataLayer = window.dataLayer || []
+ga('create', 'UA-76348050-1', 'auto');
+console.log('BBBBBB', ga)
+ga('set', 'page', '/home2');
+ga('send', 'pageview');
 
 window.addEventListener('message', e => {
-  console.log('HAHAHAHAHAHA', e.data.eventName)
+
+  console.log('EVENTO', e.data.eventName)
+  ga('set', 'page', `/${e.data.eventName}`);
+  ga('send', 'pageview');
+
   switch (e.data.eventName) {
     case 'vtex:productView': {
-      const {
-        productId,
-        productName,
-        brand,
-        categories,
-        items,
-      } = e.data.product
-
-      // const category = path(['0'], categories) as string
-
-      const data = {
-        ecommerce: {
-          detail: {
-            products: [
-              {
-                brand,
-                // category: category && category.replace(/^\/|\/$/g, ''),
-                id: productId,
-                name: productName,
-                // price: path(['items', '0', 'sellers', '0', 'commertialOffer', 'ListPrice'], e.data.product)
-              },
-            ],
-          },
-        },
-      }
-
-      window.dataLayer.push(data)
-      return
-    }
-    case 'vtex:addToCart': {
-      const {
-        items
-      } = e.data
-
-      window.dataLayer.push({
-        ecommerce: {
-          add: {
-            products: items.map((sku: any) => ({
-              brand: sku.brand,
-              id: sku.skuId,
-              name: sku.name,
-              price: `${sku.price}`,
-              quantity: sku.quantity,
-              variant: sku.variant,
-            }))
-          },
-          currencyCode: e.data.currency,
-        },
-        event: 'addToCart',
-      })
+      const { product } = e.data
       return
     }
     default: {
